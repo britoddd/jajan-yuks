@@ -30,6 +30,17 @@
     <string name="permission_denied">Izin lokasi diperlukan untuk Go Live.</string>
     <string name="live_channel_name">Status live</string>
     <string name="live_notification_title">Kamu sedang live di JajanYuks</string>
+    <string name="menu_title">Menu</string>
+    <string name="add_menu">Tambah menu</string>
+    <string name="menu_empty">Belum ada menu. Tambahkan menu pertamamu.</string>
+    <string name="menu_name">Nama menu</string>
+    <string name="menu_price">Harga (Rp)</string>
+    <string name="menu_stock">Stok</string>
+    <string name="stock_count">Stok %1$d</string>
+    <string name="invalid_menu">Isi nama, harga (lebih dari 0), dan stok dengan benar.</string>
+    <string name="save">Simpan</string>
+    <string name="cancel">Batal</string>
+    <string name="delete">Hapus</string>
 
     <!-- Buyer -->
     <string name="vendor_default_name">Penjual</string>
