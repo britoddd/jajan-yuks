@@ -61,6 +61,17 @@ Demo deadline: 2026-11-30. Full plan: https://claude.ai/artifact/Kk2fwDCTvCc3Nmh
 - Sprint 3 (Nov 25–27): remote order (seller must accept), voice status via Gemini.
 - Sprint 4 (Nov 28–30): order-ready notification, bug fixes, demo video.
 
+## Decisions
+- Email + password auth only. Buyer radius: 1 km. Every order needs seller acceptance (pending → accepted → ready / cancelled).
+- Voice parsing: Gemini via Firebase AI Logic, called from the app.
+
+## Firestore data model
+- `users/{uid}`: `role` (seller/buyer), `name`, `email`. Owner reads/writes own doc.
+- `vendors/{vendorId}`: `ownerId`, `name`, `category`, `isLive`, `location` (GeoPoint), `geohash`, `statusText`, `updatedAt`. Signed-in users read; only `ownerId` writes.
+- `vendors/{vendorId}/menu/{itemId}`: `name`, `price`, `stock`. Signed-in users read; only vendor owner writes.
+- `orders/{orderId}`: `vendorId`, `buyerId`, `items` (item id + qty), `status`, `createdAt`. Buyer and vendor owner read; buyer creates; owner updates status.
+- Decrement stock in a Firestore transaction when an order is placed (stock never below 0).
+
 ## Current milestone (Sprint 1, due Nov 21)
 Seller taps "Go Live" → location is sent to Firestore → buyer map shows the seller pin moving in real time.
 Do this end-to-end before other features.
