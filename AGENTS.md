@@ -68,7 +68,7 @@ Demo deadline: 2026-11-30. Full plan: https://claude.ai/artifact/Kk2fwDCTvCc3Nmh
 
 ## Firestore data model
 - `users/{uid}`: `role` (seller/buyer), `name`, `email`. Owner reads/writes own doc.
-- `vendors/{vendorId}`: `ownerId`, `name`, `category`, `isLive`, `location` (GeoPoint), `geohash`, `statusText`, `updatedAt`. Signed-in users read; only `ownerId` writes.
+- `vendors/{vendorId}`: `ownerId`, `name`, `category`, `isLive`, `location` (GeoPoint), `statusText`, `updatedAt`. The 1 km filter runs on the phone (`domain/Nearby.kt`); add a geohash query only if live vendors grow past a few hundred. Signed-in users read; only `ownerId` writes.
 - `vendors/{vendorId}/menu/{itemId}`: `name`, `price`, `stock`. Signed-in users read; only vendor owner writes.
 - `orders/{orderId}`: `vendorId`, `buyerId`, `items` (item id + qty), `status`, `createdAt`. Buyer and vendor owner read; buyer creates; owner updates status.
 - Decrement stock in a Firestore transaction when an order is placed (stock never below 0).
