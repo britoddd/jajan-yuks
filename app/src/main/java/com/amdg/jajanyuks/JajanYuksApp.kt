@@ -1,6 +1,7 @@
 package com.amdg.jajanyuks
 
 import android.app.Application
+import org.maplibre.android.MapLibre
 
 // Created once when the app starts; holds the AppContainer for the whole app.
 // `lateinit` means "assigned later, before first use" (here: in onCreate).
@@ -9,6 +10,7 @@ class JajanYuksApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        MapLibre.getInstance(this) // must run before any MapView is created
         container = AppContainer()
     }
 }

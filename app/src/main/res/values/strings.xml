@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">JajanYuks</string>
     <string name="welcome">Selamat datang di JajanYuks!</string>
+    <string name="role_seller">Saya Penjual</string>
+    <string name="role_buyer">Saya Pembeli</string>
+    <string name="sign_in_failed">Gagal masuk. Periksa koneksi internet lalu buka ulang aplikasi.</string>
+    <string name="go_live">Mulai Jualan (Go Live)</string>
+    <string name="stop_live">Berhenti Jualan</string>
+    <string name="status_live">Kamu sedang live. Pembeli di sekitar bisa melihat lokasimu.</string>
+    <string name="status_offline">Kamu sedang offline.</string>
+    <string name="permission_denied">Izin lokasi diperlukan untuk Go Live.</string>
+    <string name="live_channel_name">Status live</string>
+    <string name="live_notification_title">Kamu sedang live di JajanYuks</string>
+    <string name="vendor_default_name">Penjual</string>
 </resources>
