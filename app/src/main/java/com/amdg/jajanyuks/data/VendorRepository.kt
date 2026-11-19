@@ -59,6 +59,7 @@ class VendorRepository(firestore: FirebaseFirestore) {
             lng = location.longitude,
             isLive = getBoolean("isLive") == true,
             updatedAt = getTimestamp("updatedAt")?.toDate()?.time,
+            statusText = getString("statusText"),
         )
     }
 
@@ -80,6 +81,16 @@ class VendorRepository(firestore: FirebaseFirestore) {
     // `increment` adds on the server, so two quick taps never overwrite each other.
     fun changeStock(vendorId: String, itemId: String, delta: Int) {
         menuOf(vendorId).document(itemId).update("stock", FieldValue.increment(delta.toLong())).logFailure()
+    }
+
+    // Sets an absolute number (from a voice update), unlike `changeStock` which adds/subtracts.
+    fun setStock(vendorId: String, itemId: String, stock: Int) {
+        menuOf(vendorId).document(itemId).update("stock", stock).logFailure()
+    }
+
+    // A short note for buyers, e.g. "Lagi di depan SD Harapan".
+    fun setStatusText(vendorId: String, text: String) {
+        vendors.document(vendorId).update("statusText", text).logFailure()
     }
 
     fun deleteMenuItem(vendorId: String, itemId: String) {

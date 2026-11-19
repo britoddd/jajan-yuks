@@ -49,7 +49,9 @@ fun SellerScreen(onLogout: () -> Unit, viewModel: SellerViewModel = viewModel(fa
     val menu by viewModel.menu.collectAsStateWithLifecycle()
     val orders by viewModel.activeOrders.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val voice by viewModel.voice.collectAsStateWithLifecycle()
     var adding by rememberSaveable { mutableStateOf(false) }
+    var voiceOpen by rememberSaveable { mutableStateOf(false) }
     val serviceIntent = remember { Intent(context, LocationService::class.java) }
     // Reads the service's StateFlow as Compose state, pausing while the app is in the background.
     val isLive by LocationService.isRunning.collectAsStateWithLifecycle()
@@ -86,6 +88,11 @@ fun SellerScreen(onLogout: () -> Unit, viewModel: SellerViewModel = viewModel(fa
             }
         }
         if (denied) item { Text(stringResource(R.string.permission_denied), color = MaterialTheme.colorScheme.error) }
+        item {
+            OutlinedButton(onClick = { voiceOpen = true }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.voice_button))
+            }
+        }
 
         item { Text(stringResource(R.string.incoming_orders, orders.size), style = MaterialTheme.typography.titleLarge) }
         if (orders.isEmpty()) item { Text(stringResource(R.string.no_incoming_orders)) }
@@ -125,6 +132,24 @@ fun SellerScreen(onLogout: () -> Unit, viewModel: SellerViewModel = viewModel(fa
             onDismissRequest = viewModel::messageShown,
             text = { Text(stringResource(it)) },
             confirmButton = { TextButton(onClick = viewModel::messageShown) { Text(stringResource(R.string.ok)) } },
+        )
+    }
+
+    if (voiceOpen) {
+        val close = {
+            viewModel.resetVoice()
+            voiceOpen = false
+        }
+        VoiceDialog(
+            state = voice,
+            onParse = viewModel::parseVoice,
+            onVoiceUnavailable = viewModel::voiceUnavailable,
+            onSave = {
+                viewModel.applyVoice()
+                voiceOpen = false
+            },
+            onRetry = viewModel::resetVoice,
+            onDismiss = close,
         )
     }
 

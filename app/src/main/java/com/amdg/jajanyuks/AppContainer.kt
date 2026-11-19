@@ -3,6 +3,7 @@ package com.amdg.jajanyuks
 import com.amdg.jajanyuks.data.OrderRepository
 import com.amdg.jajanyuks.data.UserRepository
 import com.amdg.jajanyuks.data.VendorRepository
+import com.amdg.jajanyuks.data.VoiceParser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -14,4 +15,5 @@ class AppContainer {
     val userRepository = UserRepository(auth, firestore)
     val vendorRepository = VendorRepository(firestore)
     val orderRepository = OrderRepository(firestore)
+    val voiceParser = VoiceParser()
 }

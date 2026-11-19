@@ -60,6 +60,7 @@ fun VendorDetailScreen(
                             stringResource(if (v.isLive) R.string.vendor_live else R.string.vendor_offline),
                             color = if (v.isLive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         )
+                        v.statusText?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
                         v.updatedAt?.let {
                             Text(stringResource(R.string.updated_at, DateUtils.getRelativeTimeSpanString(it).toString()))
                         }

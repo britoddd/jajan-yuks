@@ -21,7 +21,7 @@ JajanYuks connects mobile street-food vendors (UMKM: cilok, bakso, drinks) with 
 - Maps (prototype): MapLibre Android SDK with OpenFreeMap tiles (`https://tiles.openfreemap.org/styles/liberty`) — free, no API key, no billing. Wrap `MapView` in Compose with `AndroidView`. Google Maps comes later.
 - Location: `FusedLocationProviderClient` inside a foreground service (type `location`).
 - Backend: Firebase (Authentication + Cloud Firestore) via the Firebase BoM. Live updates use Firestore snapshot listeners. Config comes from `app/google-services.json` (git-ignored; download it from the Firebase console).
-- Speech: Android `SpeechRecognizer` with locale `id-ID`. The text goes to Gemini via Firebase AI Logic (called from the app), which returns structured JSON. The seller confirms before it is saved.
+- Speech: the system speech screen (`RecognizerIntent`, locale `id-ID`); the seller can also type. The text goes to Gemini via Firebase AI Logic (called from the app), which returns structured JSON. The seller confirms before it is saved.
 - Auth: email + password only (no phone OTP for the demo).
 
 ## Package structure
@@ -68,7 +68,7 @@ Demo deadline: 2026-11-30. Full plan: https://claude.ai/artifact/Kk2fwDCTvCc3Nmh
 
 ## Firestore data model
 - `users/{uid}`: `role` (seller/buyer), `name`, `email`. Owner reads/writes own doc.
-- `vendors/{vendorId}`: `ownerId`, `name`, `category`, `isLive`, `location` (GeoPoint), `statusText`, `updatedAt`. The 1 km filter runs on the phone (`domain/Nearby.kt`); add a geohash query only if live vendors grow past a few hundred. Signed-in users read; only `ownerId` writes.
+- `vendors/{vendorId}`: `ownerId`, `name`, `category`, `isLive`, `location` (GeoPoint), `statusText` (set by voice, shown to buyers), `updatedAt`. The 1 km filter runs on the phone (`domain/Nearby.kt`); add a geohash query only if live vendors grow past a few hundred. Signed-in users read; only `ownerId` writes.
 - `vendors/{vendorId}/menu/{itemId}`: `name`, `price`, `stock`. Signed-in users read; only vendor owner writes.
 - `orders/{orderId}`: `vendorId`, `vendorName`, `buyerId`, `buyerName`, `items` (item id, name, price, qty), `status`, `createdAt`. Buyer and vendor owner read; buyer creates; owner updates status.
 - Order flow: PENDING → ACCEPTED → READY → COMPLETED; a PENDING order can be CANCELLED (seller rejects or buyer cancels).

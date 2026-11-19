@@ -8,4 +8,5 @@ data class Vendor(
     val lng: Double,
     val isLive: Boolean = true,
     val updatedAt: Long? = null, // epoch millis of the last location update
+    val statusText: String? = null, // seller's note for buyers, set by voice
 )

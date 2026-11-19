@@ -77,4 +77,20 @@
     <string name="mark_completed">Selesai</string>
     <string name="not_enough_stock">Stok tidak cukup untuk pesanan ini. Tambah stok atau tolak pesanan.</string>
     <string name="ok">OK</string>
+
+    <!-- Voice update -->
+    <string name="voice_button">🎤 Update stok/status lewat suara</string>
+    <string name="voice_title">Update lewat suara</string>
+    <string name="voice_speak">🎤 Bicara</string>
+    <string name="voice_input_label">Apa yang berubah?</string>
+    <string name="voice_hint">Contoh: cilok tinggal lima, es teh habis</string>
+    <string name="voice_process">Proses</string>
+    <string name="voice_thinking">Memproses…</string>
+    <string name="voice_confirm">Simpan perubahan ini?</string>
+    <string name="voice_stock_change">%1$s: stok %2$d → %3$d</string>
+    <string name="voice_status_change">Status: %1$s</string>
+    <string name="voice_nothing">Tidak ada perubahan yang dimengerti. Coba ulangi.</string>
+    <string name="voice_retry">Ulangi</string>
+    <string name="voice_unavailable">Pengenalan suara tidak tersedia di HP ini. Ketik saja.</string>
+    <string name="voice_failed">Gagal memproses. Periksa koneksi dan coba lagi.</string>
 </resources>
