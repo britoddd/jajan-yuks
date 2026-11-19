@@ -27,8 +27,10 @@ service cloud.firestore {
       function onlyStatusChanges() {
         return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']);
       }
-      allow read: if request.auth != null
-        && (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.vendorId);
+      // `resource == null`: the order screen starts listening before the new order reaches the server;
+      // a missing doc reveals nothing, and without this the listener is denied and stops.
+      allow read: if request.auth != null && (resource == null
+        || request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.vendorId);
       // A buyer creates their own order, always starting as PENDING.
       allow create: if request.auth != null
         && request.resource.data.buyerId == request.auth.uid
