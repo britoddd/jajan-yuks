@@ -23,7 +23,8 @@ fun Context.locationUpdates(intervalMillis: Long): Flow<Location> = callbackFlow
             result.lastLocation?.let { trySend(it) }
         }
     }
-    val request = LocationRequest.Builder(Priority.PRIORITY_BALANCED_POWER_ACCURACY, intervalMillis).build()
+    // High accuracy (GPS): only runs while the map is on screen, and walking directions need it.
+    val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, intervalMillis).build()
     client.requestLocationUpdates(request, callback, Looper.getMainLooper())
     awaitClose { client.removeLocationUpdates(callback) }
 }

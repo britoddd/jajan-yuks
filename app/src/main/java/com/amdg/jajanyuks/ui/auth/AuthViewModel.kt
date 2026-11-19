@@ -1,5 +1,6 @@
 package com.amdg.jajanyuks.ui.auth
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -49,6 +50,7 @@ class AuthViewModel(private val users: UserRepository) : ViewModel() {
             val role = try {
                 action()
             } catch (e: Exception) {
+                Log.w("AuthViewModel", "Auth failed", e)
                 return@launch fail(errorFor(e))
             }
             if (role == null) {
