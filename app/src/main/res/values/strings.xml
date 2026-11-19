@@ -44,4 +44,14 @@
 
     <!-- Buyer -->
     <string name="vendor_default_name">Penjual</string>
+    <string name="nearby_title">Penjual live dalam 1 km</string>
+    <string name="nearby_empty">Belum ada penjual live di sekitarmu.</string>
+    <string name="location_needed">Izinkan akses lokasi untuk melihat penjual terdekat.</string>
+    <string name="back">← Kembali</string>
+    <string name="vendor_not_found">Penjual tidak ditemukan.</string>
+    <string name="vendor_live">Sedang jualan (live)</string>
+    <string name="vendor_offline">Sedang tidak jualan</string>
+    <string name="updated_at">Lokasi diperbarui %1$s</string>
+    <string name="vendor_menu_empty">Penjual ini belum menambahkan menu.</string>
+    <string name="sold_out">Habis</string>
 </resources>

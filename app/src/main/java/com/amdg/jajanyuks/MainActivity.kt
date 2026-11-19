@@ -16,6 +16,7 @@ import com.amdg.jajanyuks.ui.auth.LoginScreen
 import com.amdg.jajanyuks.ui.auth.RegisterScreen
 import com.amdg.jajanyuks.ui.auth.StartScreen
 import com.amdg.jajanyuks.ui.buyer.BuyerScreen
+import com.amdg.jajanyuks.ui.buyer.VendorDetailScreen
 import com.amdg.jajanyuks.ui.seller.SellerScreen
 import com.amdg.jajanyuks.ui.theme.JajanYuksTheme
 import kotlinx.serialization.Serializable
@@ -26,6 +27,7 @@ import kotlinx.serialization.Serializable
 @Serializable object RegisterRoute
 @Serializable object SellerRoute
 @Serializable object BuyerRoute
+@Serializable data class VendorDetailRoute(val vendorId: String) // a route that carries an argument
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +55,10 @@ class MainActivity : ComponentActivity() {
                             RegisterScreen(onRegistered = goHome, onGoToLogin = { nav.popBackStack() })
                         }
                         composable<SellerRoute> { SellerScreen(onLogout = logout) }
-                        composable<BuyerRoute> { BuyerScreen(onLogout = logout) }
+                        composable<BuyerRoute> {
+                            BuyerScreen(onOpenVendor = { nav.navigate(VendorDetailRoute(it)) }, onLogout = logout)
+                        }
+                        composable<VendorDetailRoute> { VendorDetailScreen(onBack = { nav.popBackStack() }) }
                     }
                 }
             }

@@ -38,10 +38,28 @@ class VendorRepository(firestore: FirebaseFirestore) {
         vendors.document(uid).set(data, SetOptions.merge()).logFailure()
     }
 
-    // ponytail: returns every live vendor; add the 1 km geohash query in sprint 2.
-    fun liveVendors(): Flow<List<Vendor>> = vendors.whereEqualTo("isLive", true).listen { doc ->
-        val location = doc.getGeoPoint("location") ?: return@listen null
-        Vendor(doc.id, doc.getString("name"), location.latitude, location.longitude)
+    // All live vendors; the 1 km filter happens in `nearbyVendors` on the phone.
+    fun liveVendors(): Flow<List<Vendor>> = vendors.whereEqualTo("isLive", true).listen { it.toVendor() }
+
+    // One vendor, updated live (null if missing or never went live).
+    fun vendor(vendorId: String): Flow<Vendor?> = callbackFlow {
+        val registration = vendors.document(vendorId).addSnapshotListener { snapshot, error ->
+            if (error != null) Log.w(TAG, "Vendor listener failed", error)
+            trySend(snapshot?.toVendor())
+        }
+        awaitClose { registration.remove() }
+    }
+
+    private fun DocumentSnapshot.toVendor(): Vendor? {
+        val location = getGeoPoint("location") ?: return null
+        return Vendor(
+            id = id,
+            name = getString("name"),
+            lat = location.latitude,
+            lng = location.longitude,
+            isLive = getBoolean("isLive") == true,
+            updatedAt = getTimestamp("updatedAt")?.toDate()?.time,
+        )
     }
 
     // --- Menu (vendors/{vendorId}/menu/{itemId}) ---

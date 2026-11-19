@@ -7,15 +7,28 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.amdg.jajanyuks.JajanYuksApp
 import com.amdg.jajanyuks.data.VendorRepository
-import com.amdg.jajanyuks.domain.Vendor
+import com.amdg.jajanyuks.domain.NearbyVendor
+import com.amdg.jajanyuks.domain.nearbyVendors
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
+data class LatLng(val lat: Double, val lng: Double)
+
 class BuyerViewModel(repository: VendorRepository) : ViewModel() {
-    // `stateIn` keeps the latest list; the Firestore listener stops 5 s after the screen goes away.
-    val vendors: StateFlow<List<Vendor>> = repository.liveVendors()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    private val _myLocation = MutableStateFlow<LatLng?>(null)
+    val myLocation: StateFlow<LatLng?> = _myLocation
+
+    // `combine` recomputes the list whenever either the vendors or the buyer's location changes.
+    val nearby: StateFlow<List<NearbyVendor>> = combine(repository.liveVendors(), _myLocation) { vendors, me ->
+        nearbyVendors(vendors, me?.lat, me?.lng)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun updateMyLocation(lat: Double, lng: Double) {
+        _myLocation.value = LatLng(lat, lng)
+    }
 
     companion object {
         // Tells Compose's viewModel() how to build this ViewModel with its repository.
