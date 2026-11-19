@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
-    implementation(libs.maps.compose)
+    implementation(libs.maplibre)
     implementation(libs.play.services.location)
     implementation(libs.kotlinx.coroutines.play.services)
 

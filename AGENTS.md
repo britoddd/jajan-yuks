@@ -18,7 +18,7 @@ JajanYuks connects mobile street-food vendors (UMKM: cilok, bakso, drinks) with 
 - Architecture: MVVM. `ViewModel` + `StateFlow` for UI state. Coroutines for async work.
 - Dependency injection: manual (simple `AppContainer` class). Do NOT add Hilt unless the team asks.
 - Navigation: Navigation Compose.
-- Maps: Google Maps SDK + `maps-compose`.
+- Maps (prototype): MapLibre Android SDK with OpenFreeMap tiles (`https://tiles.openfreemap.org/styles/liberty`) — free, no API key, no billing. Wrap `MapView` in Compose with `AndroidView`. Google Maps comes later.
 - Location: `FusedLocationProviderClient` inside a foreground service (type `location`).
 - Backend: Firebase (Authentication + Cloud Firestore) via the Firebase BoM. Live updates use Firestore snapshot listeners. Config comes from `app/google-services.json` (git-ignored; download it from the Firebase console).
 - Speech: Android `SpeechRecognizer` with locale `id-ID`. The text goes to Gemini via Firebase AI Logic (called from the app), which returns structured JSON. The seller confirms before it is saved.
@@ -41,9 +41,9 @@ com.amdg.jajanyuks
 ```
 
 ## Rules
-- Never commit secrets. The Google Maps API key goes in `local.properties` and is read through the Secrets Gradle Plugin. `google-services.json` is not committed either.
+- Never commit secrets. API keys (e.g. a future Google Maps key) go in `local.properties` and are read through the Secrets Gradle Plugin. `google-services.json` is not committed either.
 - Firestore: every collection must be covered by Security Rules (`firestore.rules`). No open test-mode rules. A seller can only edit their own vendor document.
-- Do NOT store KTP images or KTP numbers in the prototype. Use phone/email auth.
+- Do NOT store KTP images or KTP numbers in the prototype. Use email auth.
 - Location updates: send at most every 10–20 seconds or after ~20 m of movement. Not every second.
 - Start the location foreground service only when the seller taps "Go Live" while the app is visible. Request only "while using the app" location permission.
 - Strings shown to users: Indonesian, in `res/values/strings.xml`. Code and comments: English.
