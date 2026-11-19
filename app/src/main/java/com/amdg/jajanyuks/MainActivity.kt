@@ -7,17 +7,23 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.amdg.jajanyuks.ui.auth.RoleScreen
+import com.amdg.jajanyuks.domain.Role
+import com.amdg.jajanyuks.ui.auth.LoginScreen
+import com.amdg.jajanyuks.ui.auth.RegisterScreen
+import com.amdg.jajanyuks.ui.auth.StartScreen
 import com.amdg.jajanyuks.ui.buyer.BuyerScreen
 import com.amdg.jajanyuks.ui.seller.SellerScreen
 import com.amdg.jajanyuks.ui.theme.JajanYuksTheme
 import kotlinx.serialization.Serializable
 
 // Type-safe navigation: each screen is a @Serializable object instead of a string route.
-@Serializable object RoleRoute
+@Serializable object StartRoute
+@Serializable object LoginRoute
+@Serializable object RegisterRoute
 @Serializable object SellerRoute
 @Serializable object BuyerRoute
 
@@ -25,25 +31,37 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val container = (application as JajanYuksApp).container
+        val users = (application as JajanYuksApp).container.userRepository
         // setContent replaces XML layouts: the UI is built from @Composable functions.
         setContent {
             JajanYuksTheme {
-                val navController = rememberNavController()
+                val nav = rememberNavController()
+                val goHome = { role: Role -> nav.replaceAll(if (role == Role.SELLER) SellerRoute else BuyerRoute) }
+                val logout = {
+                    users.signOut()
+                    nav.replaceAll(LoginRoute)
+                }
                 Scaffold { padding ->
-                    NavHost(navController, startDestination = RoleRoute, modifier = Modifier.padding(padding)) {
-                        composable<RoleRoute> {
-                            RoleScreen(
-                                auth = container.auth,
-                                onSeller = { navController.navigate(SellerRoute) },
-                                onBuyer = { navController.navigate(BuyerRoute) },
-                            )
+                    NavHost(nav, startDestination = StartRoute, modifier = Modifier.padding(padding)) {
+                        composable<StartRoute> {
+                            StartScreen(users) { role -> if (role == null) nav.replaceAll(LoginRoute) else goHome(role) }
                         }
-                        composable<SellerRoute> { SellerScreen() }
-                        composable<BuyerRoute> { BuyerScreen() }
+                        composable<LoginRoute> {
+                            LoginScreen(onLoggedIn = goHome, onGoToRegister = { nav.navigate(RegisterRoute) })
+                        }
+                        composable<RegisterRoute> {
+                            RegisterScreen(onRegistered = goHome, onGoToLogin = { nav.popBackStack() })
+                        }
+                        composable<SellerRoute> { SellerScreen(onLogout = logout) }
+                        composable<BuyerRoute> { BuyerScreen(onLogout = logout) }
                     }
                 }
             }
         }
     }
+}
+
+// Navigate and clear the back stack, so "back" can't return to login or a logged-out screen.
+private fun NavHostController.replaceAll(route: Any) = navigate(route) {
+    popUpTo(graph.id) { inclusive = true }
 }

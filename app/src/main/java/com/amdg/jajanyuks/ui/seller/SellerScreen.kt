@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +38,7 @@ private val permissions = buildList {
 }.toTypedArray()
 
 @Composable
-fun SellerScreen() {
+fun SellerScreen(onLogout: () -> Unit) {
     val context = LocalContext.current
     val serviceIntent = remember { Intent(context, LocationService::class.java) }
     // Reads the service's StateFlow as Compose state, pausing while the app is in the background.
@@ -69,5 +70,7 @@ fun SellerScreen() {
             Text(stringResource(if (isLive) R.string.stop_live else R.string.go_live))
         }
         if (denied) Text(stringResource(R.string.permission_denied), color = MaterialTheme.colorScheme.error)
+        // Hidden while live: stop first, so the seller is marked offline before signing out.
+        if (!isLive) TextButton(onClick = onLogout) { Text(stringResource(R.string.logout)) }
     }
 }

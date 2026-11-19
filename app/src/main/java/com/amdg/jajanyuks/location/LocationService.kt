@@ -25,10 +25,12 @@ class LocationService : Service() {
     private val container get() = (application as JajanYuksApp).container
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
+    private var uid: String? = null // the seller who went live; kept so we can mark them offline later
+
     private val callback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             val location = result.lastLocation ?: return
-            val uid = container.auth.currentUser?.uid ?: return
+            val uid = uid ?: return
             container.vendorRepository.updateLocation(uid, location.latitude, location.longitude)
         }
     }
@@ -36,6 +38,7 @@ class LocationService : Service() {
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        uid = container.auth.currentUser?.uid
         NotificationManagerCompat.from(this).createNotificationChannel(
             NotificationChannelCompat.Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_LOW)
                 .setName(getString(R.string.live_channel_name))
@@ -66,7 +69,7 @@ class LocationService : Service() {
     override fun onDestroy() {
         fused.removeLocationUpdates(callback)
         // ponytail: if the app process is killed, the vendor stays "live"; hide stale pins via updatedAt later.
-        container.auth.currentUser?.uid?.let { container.vendorRepository.goOffline(it) }
+        uid?.let { container.vendorRepository.goOffline(it) }
         running.value = false
         super.onDestroy()
     }

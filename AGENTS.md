@@ -53,6 +53,7 @@ com.amdg.jajanyuks
 - Install on connected phone: `./gradlew installDebug`
 - Unit tests: `./gradlew test`
 - Lint: `./gradlew lint`
+- Deploy Firestore rules (after changing `firestore.rules`): `firebase deploy --only firestore:rules`
 
 ## Plan
 Demo deadline: 2026-11-30. Full plan: https://claude.ai/artifact/Kk2fwDCTvCc3NmhAnqArFY

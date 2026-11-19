@@ -1,5 +1,6 @@
 package com.amdg.jajanyuks
 
+import com.amdg.jajanyuks.data.UserRepository
 import com.amdg.jajanyuks.data.VendorRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -9,5 +10,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AppContainer {
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    val userRepository = UserRepository(auth, firestore)
     val vendorRepository = VendorRepository(firestore)
 }

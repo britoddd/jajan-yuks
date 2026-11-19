@@ -1,6 +1,10 @@
 package com.amdg.jajanyuks.ui.buyer
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -8,9 +12,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -37,7 +43,7 @@ private const val SOURCE_ID = "vendors"
 private val JAKARTA = LatLng(-6.2, 106.8)
 
 @Composable
-fun BuyerScreen(viewModel: BuyerViewModel = viewModel(factory = BuyerViewModel.Factory)) {
+fun BuyerScreen(onLogout: () -> Unit, viewModel: BuyerViewModel = viewModel(factory = BuyerViewModel.Factory)) {
     val vendors by viewModel.vendors.collectAsStateWithLifecycle()
     val defaultName = stringResource(R.string.vendor_default_name)
     val context = LocalContext.current
@@ -47,36 +53,42 @@ fun BuyerScreen(viewModel: BuyerViewModel = viewModel(factory = BuyerViewModel.F
 
     MapViewLifecycle(mapView)
 
-    // AndroidView embeds a classic Android View (MapLibre's MapView) inside Compose.
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = {
-            mapView.getMapAsync { m ->
-                m.cameraPosition = CameraPosition.Builder().target(JAKARTA).zoom(12.0).build()
-                m.setStyle(STYLE_URL) { style ->
-                    style.addSource(GeoJsonSource(SOURCE_ID))
-                    style.addLayer(
-                        CircleLayer("vendor-dots", SOURCE_ID).withProperties(
-                            PropertyFactory.circleRadius(9f),
-                            PropertyFactory.circleColor("#E65100"),
-                            PropertyFactory.circleStrokeWidth(2f),
-                            PropertyFactory.circleStrokeColor("#FFFFFF"),
-                        ),
-                    )
-                    style.addLayer(
-                        SymbolLayer("vendor-names", SOURCE_ID).withProperties(
-                            PropertyFactory.textField(Expression.get("name")),
-                            PropertyFactory.textFont(arrayOf("Noto Sans Regular")),
-                            PropertyFactory.textSize(12f),
-                            PropertyFactory.textOffset(arrayOf(0f, 1.5f)),
-                        ),
-                    )
-                    map = m
+    // Box stacks its children: the map first, the logout button on top of it.
+    Box(Modifier.fillMaxSize()) {
+        // AndroidView embeds a classic Android View (MapLibre's MapView) inside Compose.
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = {
+                mapView.getMapAsync { m ->
+                    m.cameraPosition = CameraPosition.Builder().target(JAKARTA).zoom(12.0).build()
+                    m.setStyle(STYLE_URL) { style ->
+                        style.addSource(GeoJsonSource(SOURCE_ID))
+                        style.addLayer(
+                            CircleLayer("vendor-dots", SOURCE_ID).withProperties(
+                                PropertyFactory.circleRadius(9f),
+                                PropertyFactory.circleColor("#E65100"),
+                                PropertyFactory.circleStrokeWidth(2f),
+                                PropertyFactory.circleStrokeColor("#FFFFFF"),
+                            ),
+                        )
+                        style.addLayer(
+                            SymbolLayer("vendor-names", SOURCE_ID).withProperties(
+                                PropertyFactory.textField(Expression.get("name")),
+                                PropertyFactory.textFont(arrayOf("Noto Sans Regular")),
+                                PropertyFactory.textSize(12f),
+                                PropertyFactory.textOffset(arrayOf(0f, 1.5f)),
+                            ),
+                        )
+                        map = m
+                    }
                 }
-            }
-            mapView
-        },
-    )
+                mapView
+            },
+        )
+        FilledTonalButton(onClick = onLogout, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) {
+            Text(stringResource(R.string.logout))
+        }
+    }
 
     // Re-runs whenever the vendor list (or the map) changes: redraw all pins.
     LaunchedEffect(map, vendors) {

@@ -1,9 +1,28 @@
 <resources>
     <string name="app_name">JajanYuks</string>
-    <string name="welcome">Selamat datang di JajanYuks!</string>
-    <string name="role_seller">Saya Penjual</string>
-    <string name="role_buyer">Saya Pembeli</string>
-    <string name="sign_in_failed">Gagal masuk. Periksa koneksi internet lalu buka ulang aplikasi.</string>
+
+    <!-- Auth -->
+    <string name="login_title">Masuk ke akunmu</string>
+    <string name="register_title">Buat akun baru</string>
+    <string name="name_label">Nama (nama jualan untuk penjual)</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Kata sandi</string>
+    <string name="login_button">Masuk</string>
+    <string name="register_button">Daftar</string>
+    <string name="go_to_register">Belum punya akun? Daftar</string>
+    <string name="go_to_login">Sudah punya akun? Masuk</string>
+    <string name="register_as">Daftar sebagai:</string>
+    <string name="role_seller">Penjual</string>
+    <string name="role_buyer">Pembeli</string>
+    <string name="logout">Keluar</string>
+    <string name="error_fill_all">Lengkapi semua isian.</string>
+    <string name="error_weak_password">Kata sandi minimal 6 karakter.</string>
+    <string name="error_email_taken">Email sudah terdaftar. Silakan masuk.</string>
+    <string name="error_wrong_login">Email atau kata sandi salah.</string>
+    <string name="error_no_profile">Akun ini belum punya profil. Silakan daftar ulang.</string>
+    <string name="error_network">Gagal terhubung. Periksa koneksi internet.</string>
+
+    <!-- Seller -->
     <string name="go_live">Mulai Jualan (Go Live)</string>
     <string name="stop_live">Berhenti Jualan</string>
     <string name="status_live">Kamu sedang live. Pembeli di sekitar bisa melihat lokasimu.</string>
@@ -11,5 +30,7 @@
     <string name="permission_denied">Izin lokasi diperlukan untuk Go Live.</string>
     <string name="live_channel_name">Status live</string>
     <string name="live_notification_title">Kamu sedang live di JajanYuks</string>
+
+    <!-- Buyer -->
     <string name="vendor_default_name">Penjual</string>
 </resources>

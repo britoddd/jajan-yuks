@@ -1,6 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Profile: only the user themself can read or change it.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
     // Vendor doc id = seller's uid. Anyone signed in can see vendors; only the owner can change theirs.
     match /vendors/{vendorId} {
       allow read: if request.auth != null;
