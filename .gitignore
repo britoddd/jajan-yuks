@@ -11,3 +11,6 @@
 .cxx/
 *.hprof
 build.log
+/app/google-services.json
+
+proposal.pdf

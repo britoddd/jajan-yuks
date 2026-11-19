@@ -20,13 +20,13 @@ JajanYuks connects mobile street-food vendors (UMKM: cilok, bakso, drinks) with 
 - Navigation: Navigation Compose.
 - Maps: Google Maps SDK + `maps-compose`.
 - Location: `FusedLocationProviderClient` inside a foreground service (type `location`).
-- Backend: Supabase (Auth, Postgres + PostGIS, Realtime) through `supabase-kt`, with Ktor client and kotlinx.serialization.
+- Backend: Firebase (Authentication + Cloud Firestore) via the Firebase BoM. Live updates use Firestore snapshot listeners. Config comes from `app/google-services.json` (git-ignored; download it from the Firebase console).
 - Speech: Android `SpeechRecognizer` with locale `id-ID`. The text goes to a backend function that returns structured JSON.
 
 ## Package structure
 ```
 com.amdg.jajanyuks
-├── data/          # repositories, Supabase calls, data models (DTOs)
+├── data/          # repositories, Firestore calls, data models (DTOs)
 ├── domain/        # plain Kotlin models used by the UI (Vendor, MenuItem, Order)
 ├── location/      # foreground service and location helpers
 ├── speech/        # speech recognition helpers
@@ -40,8 +40,8 @@ com.amdg.jajanyuks
 ```
 
 ## Rules
-- Never commit secrets. Google Maps API key and Supabase URL/key go in `local.properties` and are read through the Secrets Gradle Plugin / `BuildConfig`.
-- Supabase: every table must have Row Level Security (RLS) enabled. A seller can only edit their own vendor row.
+- Never commit secrets. The Google Maps API key goes in `local.properties` and is read through the Secrets Gradle Plugin. `google-services.json` is not committed either.
+- Firestore: every collection must be covered by Security Rules (`firestore.rules`). No open test-mode rules. A seller can only edit their own vendor document.
 - Do NOT store KTP images or KTP numbers in the prototype. Use phone/email auth.
 - Location updates: send at most every 10–20 seconds or after ~20 m of movement. Not every second.
 - Start the location foreground service only when the seller taps "Go Live" while the app is visible. Request only "while using the app" location permission.
@@ -54,5 +54,5 @@ com.amdg.jajanyuks
 - Lint: `./gradlew lint`
 
 ## Current milestone (Week 1)
-Seller taps "Go Live" → location is sent to Supabase → buyer map shows the seller pin moving in real time.
+Seller taps "Go Live" → location is sent to Firestore → buyer map shows the seller pin moving in real time.
 Do this end-to-end before other features.
