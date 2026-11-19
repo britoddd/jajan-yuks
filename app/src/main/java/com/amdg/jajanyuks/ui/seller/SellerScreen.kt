@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -46,6 +47,8 @@ private val permissions = buildList {
 fun SellerScreen(onLogout: () -> Unit, viewModel: SellerViewModel = viewModel(factory = SellerViewModel.Factory)) {
     val context = LocalContext.current
     val menu by viewModel.menu.collectAsStateWithLifecycle()
+    val orders by viewModel.activeOrders.collectAsStateWithLifecycle()
+    val message by viewModel.message.collectAsStateWithLifecycle()
     var adding by rememberSaveable { mutableStateOf(false) }
     val serviceIntent = remember { Intent(context, LocationService::class.java) }
     // Reads the service's StateFlow as Compose state, pausing while the app is in the background.
@@ -84,6 +87,18 @@ fun SellerScreen(onLogout: () -> Unit, viewModel: SellerViewModel = viewModel(fa
         }
         if (denied) item { Text(stringResource(R.string.permission_denied), color = MaterialTheme.colorScheme.error) }
 
+        item { Text(stringResource(R.string.incoming_orders, orders.size), style = MaterialTheme.typography.titleLarge) }
+        if (orders.isEmpty()) item { Text(stringResource(R.string.no_incoming_orders)) }
+        items(orders, key = { "order-${it.id}" }) { order ->
+            IncomingOrderCard(
+                order = order,
+                onAccept = { viewModel.accept(order) },
+                onReject = { viewModel.reject(order) },
+                onReady = { viewModel.markReady(order) },
+                onComplete = { viewModel.complete(order) },
+            )
+        }
+
         item {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.menu_title), style = MaterialTheme.typography.titleLarge, modifier = Modifier.weight(1f))
@@ -102,6 +117,15 @@ fun SellerScreen(onLogout: () -> Unit, viewModel: SellerViewModel = viewModel(fa
 
         // Hidden while live: stop first, so the seller is marked offline before signing out.
         if (!isLive) item { TextButton(onClick = onLogout) { Text(stringResource(R.string.logout)) } }
+    }
+
+    // One-time message, e.g. "not enough stock" when accepting an order.
+    message?.let {
+        AlertDialog(
+            onDismissRequest = viewModel::messageShown,
+            text = { Text(stringResource(it)) },
+            confirmButton = { TextButton(onClick = viewModel::messageShown) { Text(stringResource(R.string.ok)) } },
+        )
     }
 
     if (adding) {

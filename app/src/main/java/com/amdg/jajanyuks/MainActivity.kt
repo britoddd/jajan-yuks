@@ -16,6 +16,8 @@ import com.amdg.jajanyuks.ui.auth.LoginScreen
 import com.amdg.jajanyuks.ui.auth.RegisterScreen
 import com.amdg.jajanyuks.ui.auth.StartScreen
 import com.amdg.jajanyuks.ui.buyer.BuyerScreen
+import com.amdg.jajanyuks.ui.buyer.MyOrdersScreen
+import com.amdg.jajanyuks.ui.buyer.OrderScreen
 import com.amdg.jajanyuks.ui.buyer.VendorDetailScreen
 import com.amdg.jajanyuks.ui.seller.SellerScreen
 import com.amdg.jajanyuks.ui.theme.JajanYuksTheme
@@ -28,6 +30,8 @@ import kotlinx.serialization.Serializable
 @Serializable object SellerRoute
 @Serializable object BuyerRoute
 @Serializable data class VendorDetailRoute(val vendorId: String) // a route that carries an argument
+@Serializable data class OrderRoute(val orderId: String)
+@Serializable object MyOrdersRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,9 +60,23 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<SellerRoute> { SellerScreen(onLogout = logout) }
                         composable<BuyerRoute> {
-                            BuyerScreen(onOpenVendor = { nav.navigate(VendorDetailRoute(it)) }, onLogout = logout)
+                            BuyerScreen(
+                                onOpenVendor = { nav.navigate(VendorDetailRoute(it)) },
+                                onOpenOrders = { nav.navigate(MyOrdersRoute) },
+                                onLogout = logout,
+                            )
                         }
-                        composable<VendorDetailRoute> { VendorDetailScreen(onBack = { nav.popBackStack() }) }
+                        composable<VendorDetailRoute> {
+                            VendorDetailScreen(
+                                onBack = { nav.popBackStack() },
+                                // Replace the detail screen with the order screen, so "back" goes to the map.
+                                onOrderPlaced = { id -> nav.navigate(OrderRoute(id)) { popUpTo<BuyerRoute>() } },
+                            )
+                        }
+                        composable<OrderRoute> { OrderScreen(onBack = { nav.popBackStack() }) }
+                        composable<MyOrdersRoute> {
+                            MyOrdersScreen(onBack = { nav.popBackStack() }, onOpenOrder = { nav.navigate(OrderRoute(it)) })
+                        }
                     }
                 }
             }

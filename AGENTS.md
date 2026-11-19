@@ -70,8 +70,9 @@ Demo deadline: 2026-11-30. Full plan: https://claude.ai/artifact/Kk2fwDCTvCc3Nmh
 - `users/{uid}`: `role` (seller/buyer), `name`, `email`. Owner reads/writes own doc.
 - `vendors/{vendorId}`: `ownerId`, `name`, `category`, `isLive`, `location` (GeoPoint), `statusText`, `updatedAt`. The 1 km filter runs on the phone (`domain/Nearby.kt`); add a geohash query only if live vendors grow past a few hundred. Signed-in users read; only `ownerId` writes.
 - `vendors/{vendorId}/menu/{itemId}`: `name`, `price`, `stock`. Signed-in users read; only vendor owner writes.
-- `orders/{orderId}`: `vendorId`, `buyerId`, `items` (item id + qty), `status`, `createdAt`. Buyer and vendor owner read; buyer creates; owner updates status.
-- Decrement stock in a Firestore transaction when an order is placed (stock never below 0).
+- `orders/{orderId}`: `vendorId`, `vendorName`, `buyerId`, `buyerName`, `items` (item id, name, price, qty), `status`, `createdAt`. Buyer and vendor owner read; buyer creates; owner updates status.
+- Order flow: PENDING → ACCEPTED → READY → COMPLETED; a PENDING order can be CANCELLED (seller rejects or buyer cancels).
+- Stock is decremented in a Firestore transaction when the seller accepts (`OrderRepository.accept`), because only the seller may write their menu. Stock never goes below 0.
 
 ## Current milestone (Sprint 1, due Nov 21)
 Seller taps "Go Live" → location is sent to Firestore → buyer map shows the seller pin moving in real time.

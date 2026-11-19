@@ -64,6 +64,7 @@ private val JAKARTA = MapLatLng(-6.2, 106.8)
 @Composable
 fun BuyerScreen(
     onOpenVendor: (String) -> Unit,
+    onOpenOrders: () -> Unit,
     onLogout: () -> Unit,
     viewModel: BuyerViewModel = viewModel(factory = BuyerViewModel.Factory),
 ) {
@@ -89,6 +90,9 @@ fun BuyerScreen(
         // weight(1f) gives the map all the height the list below doesn't use.
         Box(Modifier.weight(1f)) {
             VendorMap(nearby = nearby, me = me, onOpenVendor = onOpenVendor)
+            FilledTonalButton(onClick = onOpenOrders, modifier = Modifier.align(Alignment.TopStart).padding(12.dp)) {
+                Text(stringResource(R.string.my_orders))
+            }
             FilledTonalButton(onClick = onLogout, modifier = Modifier.align(Alignment.TopEnd).padding(12.dp)) {
                 Text(stringResource(R.string.logout))
             }

@@ -33,5 +33,11 @@ class UserRepository(private val auth: FirebaseAuth, firestore: FirebaseFirestor
         return Role.entries.find { it.name == role }
     }
 
+    // The signed-in user's display name (used on orders so the seller knows who ordered).
+    suspend fun currentName(): String? {
+        val uid = auth.currentUser?.uid ?: return null
+        return users.document(uid).get().await().getString("name")
+    }
+
     fun signOut() = auth.signOut()
 }
