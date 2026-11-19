@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amdg.jajanyuks.R
 import com.amdg.jajanyuks.domain.MenuItem
+import com.amdg.jajanyuks.domain.isOnline
 import com.amdg.jajanyuks.ui.components.formatRupiah
 
 @Composable
@@ -38,7 +39,7 @@ fun VendorDetailScreen(
     val menu by viewModel.menu.collectAsStateWithLifecycle()
     val cart by viewModel.cart.collectAsStateWithLifecycle()
     val placing by viewModel.placing.collectAsStateWithLifecycle()
-    val canOrder = vendor?.isLive == true
+    val canOrder = vendor?.isOnline() == true
     val total = menu.sumOf { it.price * (cart[it.id] ?: 0) }
 
     Column(Modifier.fillMaxSize()) {
@@ -57,8 +58,8 @@ fun VendorDetailScreen(
                     Column {
                         Text(v.name ?: stringResource(R.string.vendor_default_name), style = MaterialTheme.typography.headlineSmall)
                         Text(
-                            stringResource(if (v.isLive) R.string.vendor_live else R.string.vendor_offline),
-                            color = if (v.isLive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                            stringResource(if (canOrder) R.string.vendor_live else R.string.vendor_offline),
+                            color = if (canOrder) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                         )
                         v.statusText?.let { Text(it, style = MaterialTheme.typography.bodyLarge) }
                         v.updatedAt?.let {

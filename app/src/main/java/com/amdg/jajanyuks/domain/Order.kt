@@ -1,5 +1,11 @@
 package com.amdg.jajanyuks.domain
 
+// Orders that turned READY since the previous snapshot. `before == null` (first snapshot)
+// only records the baseline, so opening the app doesn't re-announce old ready orders.
+fun newlyReady(before: Map<String, OrderStatus>?, orders: List<Order>): List<Order> =
+    if (before == null) emptyList()
+    else orders.filter { it.status == OrderStatus.READY && before[it.id] != OrderStatus.READY }
+
 // Lifecycle: PENDING -> ACCEPTED -> READY -> COMPLETED. A PENDING order can be CANCELLED
 // (seller rejects it, or buyer cancels). Stock is taken when the seller accepts.
 enum class OrderStatus { PENDING, ACCEPTED, READY, COMPLETED, CANCELLED;

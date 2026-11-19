@@ -29,4 +29,13 @@ class OrderTest {
         assertFalse(OrderStatus.COMPLETED.isActive)
         assertFalse(OrderStatus.CANCELLED.isActive)
     }
+
+    @Test
+    fun newlyReadyOnlyAnnouncesTransitions() {
+        fun order(id: String, status: OrderStatus) = Order(id, "v", "V", "b", "B", listOf(cilok), status, null)
+        val ready = order("1", OrderStatus.READY)
+        assertEquals(emptyList<Order>(), newlyReady(null, listOf(ready))) // first snapshot = baseline
+        assertEquals(listOf(ready), newlyReady(mapOf("1" to OrderStatus.ACCEPTED), listOf(ready)))
+        assertEquals(emptyList<Order>(), newlyReady(mapOf("1" to OrderStatus.READY), listOf(ready))) // already told
+    }
 }

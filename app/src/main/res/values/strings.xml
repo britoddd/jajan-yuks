@@ -77,6 +77,9 @@
     <string name="mark_completed">Selesai</string>
     <string name="not_enough_stock">Stok tidak cukup untuk pesanan ini. Tambah stok atau tolak pesanan.</string>
     <string name="ok">OK</string>
+    <string name="order_ready_channel">Pesanan siap</string>
+    <string name="order_ready_title">Pesananmu siap diambil!</string>
+    <string name="order_ready_text">Jalan ke %1$s untuk mengambil pesananmu.</string>
 
     <!-- Voice update -->
     <string name="voice_button">🎤 Update stok/status lewat suara</string>

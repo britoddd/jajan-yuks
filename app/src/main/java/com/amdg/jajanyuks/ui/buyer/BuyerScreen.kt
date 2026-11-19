@@ -2,6 +2,7 @@ package com.amdg.jajanyuks.ui.buyer
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -76,10 +77,18 @@ fun BuyerScreen(
         mutableStateOf(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
     }
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-        hasPermission = result.values.any { it }
+        hasPermission = result[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            result[Manifest.permission.ACCESS_COARSE_LOCATION] == true
     }
     LaunchedEffect(Unit) {
-        if (!hasPermission) launcher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+        // Location for the map; on Android 13+ also notifications for "order ready".
+        // Already-granted permissions are skipped by the system without showing a dialog.
+        val wanted = buildList {
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
+            add(Manifest.permission.ACCESS_COARSE_LOCATION)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        launcher.launch(wanted.toTypedArray())
     }
     // While this screen is visible and permission is granted, follow the buyer's location every ~30 s.
     LaunchedEffect(hasPermission) {

@@ -10,12 +10,13 @@ const val NEARBY_RADIUS_METERS = 1_000.0
 
 data class NearbyVendor(val vendor: Vendor, val distanceMeters: Double?)
 
-// Vendors within 1 km of the buyer, closest first.
-// If the buyer's location is unknown, show every vendor (without a distance).
+// Online vendors within 1 km of the buyer, closest first.
+// If the buyer's location is unknown, show every online vendor (without a distance).
 // ponytail: filters on the phone, fine for a few hundred live vendors; switch to a geohash query beyond that.
-fun nearbyVendors(vendors: List<Vendor>, myLat: Double?, myLng: Double?): List<NearbyVendor> {
-    if (myLat == null || myLng == null) return vendors.map { NearbyVendor(it, null) }
-    return vendors
+fun nearbyVendors(vendors: List<Vendor>, myLat: Double?, myLng: Double?, now: Long = System.currentTimeMillis()): List<NearbyVendor> {
+    val online = vendors.filter { it.isOnline(now) }
+    if (myLat == null || myLng == null) return online.map { NearbyVendor(it, null) }
+    return online
         .map { NearbyVendor(it, distanceMeters(myLat, myLng, it.lat, it.lng)) }
         .filter { it.distanceMeters!! <= NEARBY_RADIUS_METERS }
         .sortedBy { it.distanceMeters }

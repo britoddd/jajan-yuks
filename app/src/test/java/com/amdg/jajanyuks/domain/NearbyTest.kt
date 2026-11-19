@@ -27,4 +27,14 @@ class NearbyTest {
         assertEquals(1, result.size)
         assertNull(result[0].distanceMeters)
     }
+
+    @Test
+    fun hidesOfflineAndStaleVendors() {
+        val now = 100 * 60_000L
+        val fresh = vendor("fresh", 0.0, 0.0).copy(updatedAt = now - 60_000)
+        val stale = vendor("stale", 0.0, 0.0).copy(updatedAt = now - STALE_AFTER_MILLIS)
+        val offline = vendor("off", 0.0, 0.0).copy(isLive = false)
+        val result = nearbyVendors(listOf(fresh, stale, offline), 0.0, 0.0, now)
+        assertEquals(listOf("fresh"), result.map { it.vendor.id })
+    }
 }
