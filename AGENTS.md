@@ -21,7 +21,8 @@ JajanYuks connects mobile street-food vendors (UMKM: cilok, bakso, drinks) with 
 - Maps: Google Maps SDK + `maps-compose`.
 - Location: `FusedLocationProviderClient` inside a foreground service (type `location`).
 - Backend: Firebase (Authentication + Cloud Firestore) via the Firebase BoM. Live updates use Firestore snapshot listeners. Config comes from `app/google-services.json` (git-ignored; download it from the Firebase console).
-- Speech: Android `SpeechRecognizer` with locale `id-ID`. The text goes to a backend function that returns structured JSON.
+- Speech: Android `SpeechRecognizer` with locale `id-ID`. The text goes to Gemini via Firebase AI Logic (called from the app), which returns structured JSON. The seller confirms before it is saved.
+- Auth: email + password only (no phone OTP for the demo).
 
 ## Package structure
 ```
@@ -53,6 +54,13 @@ com.amdg.jajanyuks
 - Unit tests: `./gradlew test`
 - Lint: `./gradlew lint`
 
-## Current milestone (Week 1)
+## Plan
+Demo deadline: 2026-11-30. Full plan: https://claude.ai/artifact/Kk2fwDCTvCc3NmhAnqArFY
+- Sprint 1 (Nov 19–21): live location, see below.
+- Sprint 2 (Nov 22–24): email sign-up with role, seller menu with stock, buyer vendor list/detail (1 km radius).
+- Sprint 3 (Nov 25–27): remote order (seller must accept), voice status via Gemini.
+- Sprint 4 (Nov 28–30): order-ready notification, bug fixes, demo video.
+
+## Current milestone (Sprint 1, due Nov 21)
 Seller taps "Go Live" → location is sent to Firestore → buyer map shows the seller pin moving in real time.
 Do this end-to-end before other features.
